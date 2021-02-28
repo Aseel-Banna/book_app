@@ -8,17 +8,22 @@
 </head>
 <body>
     <div>
-        <form action="/new" method="POST">
+        <form action="/new" method="POST" id="googleForm">
             <input type="text" placeholder="Search">
             <br>
             <br>
-            <input type="checkbox">
+            <input type="checkbox" id="title">
             <label for="">Title</label>
             <br>
             <br>
-            <input type="checkbox">
+            <input type="checkbox" id="author">
             <label for="">Author</label>
+            <br>
+            <br>
+            <!-- <input type="button" value="Search Google API Book Store" id="btn"> -->
+            <button id="btn">Search Google API Book Store</button>
         </form>
     </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 </body>
 </html>
