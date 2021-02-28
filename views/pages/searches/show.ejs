@@ -5,16 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="./styles/style.css">
 </head>
-<body>(
-    <% bookData.forEach(data => { %>
-        <div>
-            <img src="<%= data.url %> " alt="">
-            <h2><% data.title %> </h2>
-            <h3><% data.author %> </h3>
-            <p><% data.description %> </p>
+<body>
+  <header>
+    <h1>Search Results</h1>
+    <div class="topnav" id="myTopnav">
+        <a href="./index" class="active">Home</a>
+        <a href="./searches/new">Search</a>
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+          <i class="fa fa-bars"></i>
+        </a>
+      </div>
+</header>
+    <main>
+        <%books.forEach((book) => {%>
+        <div class="img-div"><img src=<%=book.image_url%> alt="image">
+            <h2><%=book.title%></h2>
+          <h3><%=book.author%></h3>  
+          <p> <%=book.description%></p> 
         </div>
-   <%   }) %> 
-   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <%});%>
+    </main>
+    <footer>
+      
+    </footer>
 </body>
 </html>

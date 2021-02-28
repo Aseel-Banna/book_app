@@ -18,10 +18,41 @@ server.get('/hello', (req,res) => {
     res.render('./pages/index');
 })
 
-server.get('/new', (req,res) => {
+server.get('/searches/new', (req,res) => {
     res.render('./pages/searches/new');
 })
 
+server.post('/searches', (req,res)=>{
+    console.log('Hello from search');
+    let searchInput = req.body.search;
+    let key= process.env.GOOGLE_API_KEY;
+    let url;
+    if (req.body.searchValue === 'title'){
+        url = `https://www.googleapis.com/books/v1/volumes?q=${searchInput}+intitle`;
+    }else{
+        url = `https://www.googleapis.com/books/v1/volumes?q=${searchInput}+inauthor`;
+    }
+    console.log('Hello from search22');
+   superagent.get(url)
+    .then(result =>{
+        console.log(result);
+        let booksArray = result.body.items.map((item)=>{
+        return new Book(item);
+    })
+    console.log('ASEEL',booksArray);
+    // renderData(booksArray);
+    // res.send(booksArray);
+    res.render('pages/searches/show', { books: booksArray });
+    })
+    .catch(()=>{
+                errorHandler('Error in getting data from BooksAPI');
+            })
+
+})
+
+// function renderData(req,res,arr){
+//     res.render('pages/searches/show', { books: arr });
+// }
 
 server.get('/', (req,res) => {
     res.render('./pages/index');
@@ -30,38 +61,6 @@ server.get('/', (req,res) => {
 server.get('/error', (req,res) => {
     errorHandler('Error!!');
 })
-
-server.post('/searches', (req,res)=>{
-    res.send('HIIIIIIIIIIIIIIIIIIIII')
-})
-
-server.post('/new', (req,res) =>{
-    let search= req.query.search;
-    // let title = req.query.title;
-    // let author = req.query.author;
-    let key = process.env.GOOGLE_API_KEY;
-    let url;
-    if ($('#title').is(":checked"))
-    {
-    url = `https://www.googleapis.com/books/v1/volumes?q=${search}+intitle:keyes&key=${key}`
-    }else{
-        url =`https://www.googleapis.com/books/v1/volumes?q=${search}+inauthor:keyes&key=${key}`;
-    }
-    superagent.get(url)
-    .then(result => {
-        let booksArray = result.body.items.volumeInfo.map((item)=>{
-            return new Book(item);
-    })
-    $('button').click(()=>{
-
-        res.render('./pages/searches/show',{bookData:booksArray});
-    })
-    })
-    .catch(()=>{
-        errorHandler('Error in getting data from BooksAPI');
-    })
-});
-
 
 server.listen(PORT, () => {
     console.log(`Listening to PORT ${PORT}`);
@@ -73,10 +72,19 @@ function errorHandler(errors) {
     })
 }
 
-function Book (data){
-    this.url = data.imageLinks.imageLinks;
-    this.title = data.title;
-    this.author = data.authors[0];
-    this.description = data.description;
+// function Book (data){
+//     // this.url = data.volumeInfo.imageLinks.thumbnail || `https://i.imgur.com/J5LVHEL.jpg`;
+//     this.url = data.volumeInfo.imageLinks;
+//     this.title = data.volumeInfo.title;
+//     this.author = data.volumeInfo.authors;
+//     this.description = data.searchInfo.textSnippet;
 
-}
+// }
+function Book(data) {
+    this.image_url =
+      (data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) ||
+      "https://i.imgur.com/J5LVHEL.jpg";
+    this.title = data.volumeInfo.title;
+    this.author = data.volumeInfo.authors;
+    this.description = data.volumeInfo.description || "There is no description";
+  }
