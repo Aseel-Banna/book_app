@@ -38,9 +38,9 @@ footer{
   }
 
   main{
-    display: grid;
+    /* display: grid; */
     text-align: center;
-    grid-template-columns: repeat(3, 1fr);
+    /* grid-template-columns: repeat(3, 1fr); */
     margin-left: auto;
     margin-right: auto;
   }
