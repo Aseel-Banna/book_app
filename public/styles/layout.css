@@ -1,0 +1,47 @@
+footer{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: black;
+    height: 40px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  header{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-color: black;
+    height: 80px;
+    display: flex;
+    justify-content:left;
+    align-items: center;
+    color: white;
+  }
+
+  form{
+      text-align: center;
+      margin-top: 150px;
+  }
+
+  fieldset{
+      background-color: #828282;
+      color: white;
+      font-weight: bold;
+      width: 230px;
+      margin-left: auto;
+      margin-right: auto;
+  }
+
+  main{
+    display: grid;
+    text-align: center;
+    grid-template-columns: repeat(3, 1fr);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
