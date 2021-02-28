@@ -15,8 +15,11 @@ server.use(express.static('./public'));
 server.use(express.urlencoded({extended:true}));
 
 server.get('/hello', (req,res) => {
-    let helloArray = ['Hello World'];
-    res.render('./pages/index', {helloWorld:helloArray});
+    res.render('./pages/index');
+})
+
+server.get('/new', (req,res) => {
+    res.render('./pages/searches/new');
 })
 
 
