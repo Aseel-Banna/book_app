@@ -30,20 +30,17 @@
     }
   }
 </script>
-    <main>
-        <% books.forEach((book) => { %>
-        <div class="img-div"><img src=<%= book.image_url %> alt="image">
-            <h2><%= book.title %></h2>
-          <h3><%= book.author %></h3>  
-          <p> <%= book.description %></p> 
-          <form action="/books" method="POST">
-            <input type="submit" value="Select this book!">
-          </form>
-        </div>
-        <% }); %>
-    </main>
-    <footer>
-      
-    </footer>
-</body>
-</html>
+<main>
+      <section>
+        <div class="img-div">
+            <img src=<%= book.image_url %> alt="image">
+            <h3><%= book.title %></h3>
+            <h4><%= book.author %></h4>
+            <p><%= book.description %></p>
+            <p>ISBN: <%= book.isbn %></p>
+          </div>
+      </section>
+</main>
+   </body>
+   </html>
+   
