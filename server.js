@@ -24,7 +24,6 @@ server.get('/hello', (req, res) => {
     res.render('./pages/index');
 })
 
-// SOLVEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 server.get("/books/:id", (req, res) => {
     let id = req.params.id;
     //   let bookShelf = getBookShelf();
@@ -38,7 +37,6 @@ server.get("/books/:id", (req, res) => {
         .catch(() => {
             errorHandler('Error in getting Database');
         });
-    // res.render("pages/books/show", { books: book, bookShelf: bookShelf });
 });
 
 server.get('/searches/new', (req, res) => {
@@ -88,16 +86,24 @@ server.get('/error', (req, res) => {
 })
 
 server.post('/books', (req, res) => {
-    let SQL = `INSERT INTO books (author, title, isbn, image_url, description) VALUES ($1, $2, $3, $4, $5)RETURNING id;`;
-    let value = req.body;
-    let safeValues = [value.author, value.title, value.isbn ,value.image_url, value.description];
-    client.query(SQL, safeValues)
-        .then(results => {
-            // console.log('ROOOWS', results.rows);
-            // console.log(results.rows[0].id);
-            console.log(results);
-            res.redirect(`/books/${results.rows[0].id}`);
-        })
+    // let SQL = `INSERT INTO books(author, title, isbn, image_url, description) VALUES ($1, $2, $3, $4, $5)RETURNING id;`;
+    // let value = req.body;
+    // let safeValues = [value.author, value.title, value.isbn ,value.image_url, value.description];
+    // client.query(SQL, safeValues)
+    //     .then(results => {
+    //         console.log(results);
+    //         res.redirect( `/books/${results.rows[0].id}`);
+    //     })
+    let newSQL = `INSERT INTO books (author, title, isbn, image_url, description) VALUES ($1, $2, $3, $4, $5) RETURNING id;`;
+    let newValues = [req.body.author, req.body.title, req.body.isbn, req.body.image_url, req.body.description];
+  
+    return client.query(newSQL, newValues)
+      .then(result => {
+        res.redirect(`/books/${result.rows[0].id}`);
+      })
+      .catch(()=>{
+                errorHandler('Error in getting data!!');
+            })
 })
 
 client.connect()
@@ -112,23 +118,7 @@ function errorHandler(errors) {
     })
 }
 
-
-
-// function getBookShelf() {
-//     let SQL = "SELECT DISTINCT bookshelf FROM books";
-//     return client.query(SQL)
-//         .then((res) => {
-//             return res.rows;
-//         })
-//         .catch(() => {
-//             errorHandler('Error in getting Database');
-//         });
-// }
-
 function Book(data) {
-    // this.image_url =
-    //   (data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) ||
-    //   "https://i.imgur.com/J5LVHEL.jpg";
     if (data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) {
         this.image_url = data.volumeInfo.imageLinks.thumbnail
     } else {
