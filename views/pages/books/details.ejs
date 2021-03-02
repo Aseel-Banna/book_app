@@ -21,9 +21,17 @@
             <h4><%= book.author %></h4>
             <p><%= book.description %></p>
             <p>ISBN: <%= book.isbn %></p>
+            <button id="updateBtn">Update Details</button>
+            <form action="/deleteBook/<%= book.id %>?_method=delete" method="post">
+              <button id="deleteBtn">Delete Book</button>
+            </form>
+
           </div>
+          <%- include('edit.ejs'); %>
       </section>
 </main>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="../../../app.js"></script>
    </body>
    </html>
    

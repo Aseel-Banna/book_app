@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/base.css">
+    <link rel="stylesheet" href="../styles/module.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Document</title>
+</head>
+<body>
+      <section id="updateForm">
+        <h2>Update Book!</h2>
+        <br>
+        <form action="/books/<%= book.id %>?_method=put" method="POST" id="editForm">
+          <input type="text" name="title" value="<%= book.title  %>" >
+          <br>
+          <br>
+          <input type="text" name="author" value="<%= book.author %>">
+          <br>
+          <br>
+          <textarea name="description" cols="30" rows="10"><%= book.description%> </textarea>
+          <br>
+          <br>
+          <input type="text" name="isbn" value="<%= book.isbn %>">
+          <br>
+          <br>
+          <input type="text" name="image_url" value="<%= book.image_url %>">
+          <br>
+          <br>
+          <button>Update Book Details</button> 
+          <button id="cancel">Cancel</button> 
+        </form>
+        </section>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="../../../app.js"></script>
+</body>
+</html>

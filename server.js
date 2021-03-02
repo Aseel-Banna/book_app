@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const cors = require('cors');
 const superagent = require('superagent');
+const methodOverride = require('method-override');
 
 const PORT = process.env.PORT || 3000;
 const server = express();
@@ -14,14 +15,43 @@ server.set('view engine', 'ejs');
 
 const pg = require('pg');
 
-// const client = new pg.Client({ connectionString: process.env.DATABASE_URL,   ssl: { rejectUnauthorized: false } });
-const client = new pg.Client(process.env.DATABASE_URL);
+const client = new pg.Client({ connectionString: process.env.DATABASE_URL,   ssl: { rejectUnauthorized: false } });
+// const client = new pg.Client(process.env.DATABASE_URL);
 
 server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
+server.use(methodOverride('_method'));
 
 server.get('/hello', (req, res) => {
     res.render('./pages/index');
+})
+
+server.put('/books/:id', (req,res) => {
+  console.log(req.body);
+  let id = req.params.id;
+  let { author ,title, isbn , image_url, description} = req.body;
+  let SQL = `UPDATE books SET author=$1,title=$2,isbn=$3, image_url=$4,  description=$5 WHERE id =$6;`;
+  console.log('Hello!! After SQL');
+  let values = [author ,title, isbn, image_url, description, id];
+  console.log('Hello!! After Values');
+  client.query(SQL, values)
+    .then(() => {
+            console.log('Hello!!');
+      res.redirect(`/books/${id}`);
+    })
+    .catch(err => {
+      errorHandler('Error in updating the DATA!')
+    })
+});
+
+server.delete('/deleteBook/:id', (req,res) => {
+    let id = req.params.id;
+    let SQL = `DELETE FROM books WHERE id=$1;`;
+    let value = [id];
+    client.query(SQL,value)
+    .then(()=>{
+      res.redirect('/');
+    })
 })
 
 server.get("/books/:id", (req, res) => {
@@ -68,11 +98,9 @@ server.post('/searches', (req, res) => {
 })
 
 server.get('/', (req, res) => {
-    // res.render('./pages/index');
     let SQL = `SELECT * FROM books;`
     client.query(SQL)
         .then(result => {
-            //   console.log(result.rows);
             res.render('pages/index', { booksList: result.rows, bookCount: result.rowCount });
         });
 });
@@ -112,10 +140,9 @@ function Book(data) {
     } else {
         this.image_url = "https://i.imgur.com/J5LVHEL.jpg";
     }
-    this.title = (data.volumeInfo.title) ? data.volumeInfo.title : `Title unavilable`;
+    this.title = (data.volumeInfo.title) ? data.volumeInfo.title : `Title Unavailable`;
     this.author = (Array.isArray(data.volumeInfo.authors)) ? data.volumeInfo.authors.join(', ') : `Unknown Author`;
-    this.description = (data.volumeInfo.description) ? data.volumeInfo.description : `description unavilable`;
-    // this.isbn = (data.volumeInfo.industryIdentifiers) ? data.volumeInfo.industryIdentifiers[0].identifier : `Unknown ISBN`;
+    this.description = (data.volumeInfo.description) ? data.volumeInfo.description : `Description Unavailable`;
     if (data.volumeInfo.industryIdentifiers) {
         this.isbn = data.volumeInfo.industryIdentifiers[0].identifier
     } else {
