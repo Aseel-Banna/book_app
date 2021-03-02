@@ -15,8 +15,8 @@ server.set('view engine', 'ejs');
 
 const pg = require('pg');
 
-// const client = new pg.Client({ connectionString: process.env.DATABASE_URL,   ssl: { rejectUnauthorized: false } });
-const client = new pg.Client(process.env.DATABASE_URL);
+const client = new pg.Client({ connectionString: process.env.DATABASE_URL,   ssl: { rejectUnauthorized: false } });
+// const client = new pg.Client(process.env.DATABASE_URL);
 
 server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
@@ -62,6 +62,7 @@ server.get("/books/:id", (req, res) => {
         .then((result) => {
             console.log('MAKE SURE',result.rows[0]);
             res.render('pages/books/details', { book :result.rows[0]});
+            // res.render('pages/books/show', { book :result.rows[0]});
         })
         .catch(() => {
             errorHandler('Error in getting Database');
