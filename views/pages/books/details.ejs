@@ -5,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="./styles/reset.css">
-    <link rel="stylesheet" href="./styles/base.css">
-    <link rel="stylesheet" href="./styles/module.css">
-    <link rel="stylesheet" href="./styles/layout.css">
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/base.css">
+    <link rel="stylesheet" href="../styles/module.css">
+    <link rel="stylesheet" href="../styles/layout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -21,9 +21,17 @@
             <h4><%= book.author %></h4>
             <p><%= book.description %></p>
             <p>ISBN: <%= book.isbn %></p>
+            <button id="updateBtn">Update Details</button>
+            <form action="/deleteBook/<%= book.id %>?_method=delete" method="post">
+              <button id="deleteBtn">Delete Book</button>
+            </form>
+
           </div>
+          <%- include('edit.ejs'); %>
       </section>
 </main>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="../../../app.js"></script>
    </body>
    </html>
    

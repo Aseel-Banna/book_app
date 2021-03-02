@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const cors = require('cors');
 const superagent = require('superagent');
+const methodOverride = require('method-override');
 
 const PORT = process.env.PORT || 3000;
 const server = express();
@@ -19,14 +20,42 @@ const client = new pg.Client(process.env.DATABASE_URL);
 
 server.use(express.static('./public'));
 server.use(express.urlencoded({ extended: true }));
+server.use(methodOverride('_method'));
 
 server.get('/hello', (req, res) => {
     res.render('./pages/index');
 })
 
+server.put('/books/:id', (req,res) => {
+  console.log(req.body);
+  let id = req.params.id;
+  let { author ,title, isbn , image_url, description} = req.body;
+  let SQL = `UPDATE books SET author=$1,title=$2,isbn=$3, image_url=$4,  description=$5 WHERE id =$6;`;
+  console.log('Hello!! After SQL');
+  let values = [author ,title, isbn, image_url, description, id];
+  console.log('Hello!! After Values');
+  client.query(SQL, values)
+    .then(() => {
+            console.log('Hello!!');
+      res.redirect(`/books/${id}`);
+    })
+    .catch(err => {
+      errorHandler('Error in updating the DATA!')
+    })
+});
+
+server.delete('/deleteBook/:id', (req,res) => {
+    let id = req.params.id;
+    let SQL = `DELETE FROM books WHERE id=$1;`;
+    let value = [id];
+    client.query(SQL,value)
+    .then(()=>{
+      res.redirect('/');
+    })
+})
+
 server.get("/books/:id", (req, res) => {
     let id = req.params.id;
-    //   let bookShelf = getBookShelf();
     let SQL = `SELECT * FROM books WHERE id=$1;`;
     let values = [id];
     client.query(SQL, values)
@@ -44,25 +73,21 @@ server.get('/searches/new', (req, res) => {
 });
 
 server.post('/searches', (req, res) => {
-    // console.log('Hello from search');
     let searchInput = req.body.search;
     let key = process.env.GOOGLE_API_KEY;
     let url;
     if (req.body.searchValue === 'title') {
-        url = `https://www.googleapis.com/books/v1/volumes?q=${searchInput}+intitle`;
+        url = `https://www.googleapis.com/books/v1/volumes?q=+intitle:${searchInput}`;
     } else {
-        url = `https://www.googleapis.com/books/v1/volumes?q=${searchInput}+inauthor`;
+        url = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${searchInput}`;
     }
-    // console.log('Hello from search22');
+    console.log('Hello from search22', url);
     superagent.get(url)
         .then(result => {
-            // console.log(result);
+            console.log(result.body);
             let booksArray = result.body.items.map((item) => {
                 return new Book(item);
             })
-            // console.log('ASEEL',booksArray);
-            // renderData(booksArray);
-            // res.send(booksArray);
             res.render('pages/searches/show', { books: booksArray });
         })
         .catch(() => {
@@ -72,11 +97,9 @@ server.post('/searches', (req, res) => {
 })
 
 server.get('/', (req, res) => {
-    // res.render('./pages/index');
     let SQL = `SELECT * FROM books;`
     client.query(SQL)
         .then(result => {
-            //   console.log(result.rows);
             res.render('pages/index', { booksList: result.rows, bookCount: result.rowCount });
         });
 });
@@ -86,14 +109,6 @@ server.get('/error', (req, res) => {
 })
 
 server.post('/books', (req, res) => {
-    // let SQL = `INSERT INTO books(author, title, isbn, image_url, description) VALUES ($1, $2, $3, $4, $5)RETURNING id;`;
-    // let value = req.body;
-    // let safeValues = [value.author, value.title, value.isbn ,value.image_url, value.description];
-    // client.query(SQL, safeValues)
-    //     .then(results => {
-    //         console.log(results);
-    //         res.redirect( `/books/${results.rows[0].id}`);
-    //     })
     let newSQL = `INSERT INTO books (author, title, isbn, image_url, description) VALUES ($1, $2, $3, $4, $5) RETURNING id;`;
     let newValues = [req.body.author, req.body.title, req.body.isbn, req.body.image_url, req.body.description];
   
@@ -124,9 +139,12 @@ function Book(data) {
     } else {
         this.image_url = "https://i.imgur.com/J5LVHEL.jpg";
     }
-    this.title = data.volumeInfo.title;
-    this.author = data.volumeInfo.authors;
-    this.description = data.volumeInfo.description || "There is no description";
-    this.isbn = (data.volumeInfo.industryIdentifiers && data.volumeInfo.industryIdentifiers[0].type + " " +
-        data.volumeInfo.industryIdentifiers[0].identifier) || "There is no isbn ";
+    this.title = (data.volumeInfo.title) ? data.volumeInfo.title : `Title Unavailable`;
+    this.author = (Array.isArray(data.volumeInfo.authors)) ? data.volumeInfo.authors.join(', ') : `Unknown Author`;
+    this.description = (data.volumeInfo.description) ? data.volumeInfo.description : `Description Unavailable`;
+    if (data.volumeInfo.industryIdentifiers) {
+        this.isbn = data.volumeInfo.industryIdentifiers[0].identifier
+    } else {
+        this.isbn = "No ISBN for this book!!";
+    }
 }
